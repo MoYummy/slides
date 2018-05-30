@@ -4,7 +4,7 @@
       <div class="open-git" @click="openGit"></div>
     </div>
     <div class="center">
-      <div class="select" @click="showList">{{ currentSlide }}</div>
+      <div class="select-prez" @click="showList">{{ currentSlideTitle }}</div>
     </div>
     <div class="right">{{ appInfo }}</div>
   </div>
@@ -19,8 +19,9 @@ export default {
     }
   },
   computed: {
-    currentSlide () {
-      return this.$store.state.slide.current.title || 'Select ...'
+    currentSlideTitle () {
+      const cp = this.$store.getters.currentPrez
+      return cp ? cp.title : 'Select ...'
     },
     appInfo () {
       const packageJson = this.$store.state.env.packageJson
@@ -62,7 +63,7 @@ export default {
   user-select: none;
 }
 
-.nav-bar .select {
+.nav-bar .select-prez {
   background: transparent;
   border: 0.1em;
   color: white;
@@ -70,7 +71,7 @@ export default {
   height: 100%;
 }
 
-.nav-bar .select:hover {
+.nav-bar .select-prez:hover {
   background: rgba(0, 0, 0, 0.3);
 }
 

@@ -1,12 +1,12 @@
 <template>
-  <div class="slide-list" v-if="listVisible">
+  <div class="prez-list" v-if="listVisible">
     <div class="modal-mask" @click="close">
       <div class="modal-wrapper">
         <div class="modal-container">
-          <div class="slide"
-            v-for="(slide, i) of slideList"
-            :key="i"
-            @click="select(slide)">{{ slide.title }}</div>
+          <div class="prez"
+            v-for="(prez, source) of prezList"
+            :key="source"
+            @click="select(source)">{{ prez.title }}</div>
         </div>
       </div>
     </div>
@@ -14,10 +14,12 @@
 </template>
 
 <script>
+import Reveal from 'reveal.js/js/reveal'
+
 export default {
-  name: 'SlideList',
+  name: 'PrezList',
   computed: {
-    slideList () {
+    prezList () {
       return this.$store.state.slide.sources
     },
     listVisible () {
@@ -28,16 +30,19 @@ export default {
     close () {
       this.$store.dispatch('list-hide')
     },
-    select (slide) {
+    select (source) {
       this.$store.dispatch('list-hide')
-      slide && this.$store.dispatch('show-slide', { slide })
+      source && this.$store.dispatch('show-prez', { source }).then(() => {
+        Reveal.sync()
+        Reveal.slide(0, 0, 0)
+      })
     }
   },
 }
 </script>
 
 <style scoped>
-.slide-list {
+.prez-list {
   width: 0;
 }
 
@@ -70,7 +75,7 @@ export default {
   width: fit-content;
 }
 
-.slide {
+.prez {
   color: black;
 }
 </style>

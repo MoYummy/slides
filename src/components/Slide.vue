@@ -1,12 +1,12 @@
 <template>
   <div class="slide-container">
     <div class="reveal">
-      <div class="slides">
-        <section
+      <div class="slides" v-html="sections">
+        <!--<section
           v-for="(sect, i) of sections"
           :key="i"
           v-html="sect" >
-        </section>
+        </section>-->
       </div>
     </div>
   </div>
@@ -22,9 +22,12 @@ export default {
     }
   },
   computed: {
-    sections () {
-      return utils.md2html(utils.markdowns())
+    prez () {
+      return this.$store.getters.currentPrez
     },
+    sections () {
+      return this.prez ? this.prez.html : ''
+    }
   },
   mounted () {
     document.body.addEventListener('mousemove', this.showNav)
@@ -48,7 +51,7 @@ export default {
   methods: {
     showNav (event) {
       this.$store.dispatch(event.clientY < 30 ? 'nav-show' : 'nav-hide')
-    }
+    },
   }
 }
 </script>
