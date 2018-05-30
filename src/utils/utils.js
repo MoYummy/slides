@@ -1,15 +1,26 @@
 import marked from 'marked'
 import axios from 'axios'
 
-export function markdowns() {
-  return [
-    '# Marked1 in browser\n\nRendered by **marked**.',
-    '# Marked2 in browser\n\nRendered by **marked**.'
-  ]
+const uriPrefix = getUriPrefix()
+
+console.log(uriPrefix)
+function getUriPrefix () {
+  if (/github\.io$/.test(window.location.origin)) {
+    console.log('github')
+    return '/' + window.location.pathname.split('/')[1]
+  }
+  return ''
 }
 
-export function md2html(markdowns) {
-  return markdowns.map(md => marked(md))
+export function $fetch(uri) {
+  return new Promise((resolve, reject) => {
+    console.log(uriPrefix)
+    axios.get(uriPrefix + uri).then(resp => {
+      resolve(resp.data)
+    }).catch(err => {
+      reject(err)
+    })
+  })
 }
 
 const horizontalSeparator = '[//]: <> (horizontal)'
@@ -26,14 +37,4 @@ export function md2reveal(markdown) {
 function wrapTag(str, tag = 'div') {
   tag = tag.replace(/<>/g, '')
   return '<' + tag + '>' + str + '</' + tag + '>'
-}
-
-export function $fetch(uri) {
-  return new Promise((resolve, reject) => {
-    axios.get(uri).then(resp => {
-      resolve(resp.data)
-    }).catch(err => {
-      reject(err)
-    })
-  })
 }
