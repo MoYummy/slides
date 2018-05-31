@@ -31,7 +31,16 @@ export default {
       return this.$store.state.view.navVisible
     }
   },
+  mounted () {
+    document.body.addEventListener('mousemove', this.showNav)
+  },
+  beforeDestroy () {
+    document.body.removeEventListener('mousemove', this.showNav)
+  },
   methods: {
+    showNav (event) {
+      this.$store.dispatch(event.clientY < 50 ? 'nav-show' : 'nav-hide')
+    },
     showList () {
       this.$store.dispatch('list-show')
     },
@@ -93,14 +102,16 @@ export default {
   .nav-bar {
     align-items: center;
     flex-direction: column;
-    justify-content: flex-start;
     height: auto;
+    justify-content: flex-start;
   }
 
   .nav-bar > div {
-    height: 2em;
-    width: 100%;
     display: flex;
+    flex-direction: row;
+    height: 2em;
+    justify-content: center;
+    width: 100%;
   }
 }
 </style>

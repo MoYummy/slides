@@ -22,5 +22,8 @@ services:
     volumes:
       - .:/slides
       - /slides/node_modules/
+    ports:
+      - '8889:80'
     working_dir: /slides
+    #command: /bin/sh -c "npm i && npm start"
     command: /bin/sh -c "npm i && npm run build"

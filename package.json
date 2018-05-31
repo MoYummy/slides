@@ -4,6 +4,7 @@
   "description": "slides",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server",
     "build": "webpack"
   },
   "repository": {
@@ -33,6 +34,7 @@
     "vue-loader": "^15.2.1",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.9.1",
-    "webpack-cli": "^2.1.4"
+    "webpack-cli": "^2.1.4",
+    "webpack-dev-server": "^3.1.4"
   }
 }

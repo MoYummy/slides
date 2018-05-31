@@ -8,6 +8,9 @@ export default {
   computed: {
     store () {
       return this.$store.state
+    },
+    processEnv () {
+      return process.env
     }
   }
 }

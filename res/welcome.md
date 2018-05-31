@@ -1,4 +1,4 @@
-# Horizon1
+# Horizon1 Title
 
 [//]: <> (horizontal)
 

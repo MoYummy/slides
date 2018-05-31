@@ -2,11 +2,6 @@
   <div class="slide-container">
     <div class="reveal">
       <div class="slides" v-html="sections">
-        <!--<section
-          v-for="(sect, i) of sections"
-          :key="i"
-          v-html="sect" >
-        </section>-->
       </div>
     </div>
   </div>
@@ -30,7 +25,6 @@ export default {
     }
   },
   mounted () {
-    document.body.addEventListener('mousemove', this.showNav)
     Reveal.initialize({
       center: true,
       controls: true,
@@ -45,14 +39,6 @@ export default {
       }
     })
   },
-  beforeDestroy () {
-    document.body.removeEventListener('mousemove', this.showNav)
-  },
-  methods: {
-    showNav (event) {
-      this.$store.dispatch(event.clientY < 30 ? 'nav-show' : 'nav-hide')
-    },
-  }
 }
 </script>
 

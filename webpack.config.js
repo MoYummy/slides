@@ -26,12 +26,24 @@ module.exports = {
     ]
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
+    chunkFilename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist')
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
+  devServer: {
+    contentBase: path.join(__dirname, "dist"),
+    host: "0.0.0.0",
+    port: 80
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
+        NODE_ENV: '"' + process.env.NODE_ENV + '"',
         PACKAGE_JSON: '"' + escape(JSON.stringify(require('./package.json'))) + '"'
       }
     }),

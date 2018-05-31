@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Slide from './components/Slide'
+const Slide = () => import('./components/Slide')
 
 Vue.use(Router)
 

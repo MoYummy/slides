@@ -34,7 +34,9 @@ export default {
       this.$store.dispatch('list-hide')
       source && this.$store.dispatch('show-prez', { source }).then(() => {
         Reveal.sync()
-        Reveal.slide(0, 0, 0)
+        setTimeout(() => {
+          Reveal.slide(0, 0, 0)
+        }, 100);
       })
     }
   },
@@ -63,6 +65,9 @@ export default {
   align-items: center;
   display: flex;
   justify-content: center;
+  min-height: 20%;
+  min-width: 30%;
+  width: fit-content;
 }
 
 .modal-container {
@@ -71,11 +76,24 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 100%;
   padding: 0.5em;
   width: fit-content;
 }
 
 .prez {
+  align-items: center;
   color: black;
+  display: flex;
+  height: 2em;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 0.5em;
+  white-space: nowrap;
+}
+
+.prez:hover {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 </style>

@@ -1,22 +1,28 @@
 <template>
   <div class="app">
-    <nav-bar></nav-bar>
-    <prez-list></prez-list>
+    <mobile-point></mobile-point>
+    <nav-bar>Loading</nav-bar>
+    <prez-list>Loading</prez-list>
     <router-view />
-    <vuex-store></vuex-store>
+    <!--<vuex-store></vuex-store>-->
   </div>
 </template>
 
 <script>
-import NavBar from './components/NavBar'
-import PrezList from './components/PrezList'
-import VuexStore from './components/VuexStore'
+const MobilePoint = () => import('./components/MobilePoint')
+const NavBar = () => import('./components/NavBar')
+const PrezList = () => import('./components/PrezList')
+// const VuexStore = () => import('./components/VuexStore')
 
 export default {
   components: {
+    MobilePoint,
     NavBar,
     PrezList,
-    VuexStore
+    // VuexStore,
+  },
+  mounted () {
+    this.$store.dispatch('fetch-prez-list')
   }
 }
 </script>

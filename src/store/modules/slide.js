@@ -2,18 +2,7 @@ import * as utils from '../../utils/utils'
 
 const state = {
   current: undefined,
-  sources: {
-    '/res/welcome.md': {
-      title: 'Welcome',
-      markdown: '',
-      html: []
-    },
-    '/res/welcome2.md': {
-      title: 'Welcome2',
-      markdown: '',
-      html: []
-    }
-  }
+  sources: {}
 }
 
 const getters = {
@@ -23,6 +12,11 @@ const getters = {
 }
 
 const actions = {
+  'fetch-prez-list': function ({ commit, dispatch }) {
+    return utils.fetchPrezList().then(prezList => {
+      commit('update-prez-list', { prezList })
+    })
+  },
   'show-prez': function ({ commit, dispatch }, { source }) {
     return new Promise((resolve, reject) => {
       if (state.sources[source]) {
@@ -45,6 +39,13 @@ const actions = {
 }
 
 const mutations = {
+  'update-prez-list': function (state, payload) {
+    const { prezList } = payload
+    state.sources = {}
+    prezList.forEach(path => {
+      state.sources[path] = utils.metadata(path)
+    })
+  },
   'show-prez': function (state, payload) {
     const { source, markdown } = payload
     if (markdown) {
