@@ -1,3 +1,4 @@
+import path from 'path'
 import marked from 'marked'
 import axios from 'axios'
 
@@ -12,7 +13,7 @@ function getUriPrefix () {
 
 export function $fetch(uri, absolute = false) {
   return new Promise((resolve, reject) => {
-    axios.get(absolute ? uri : uriPrefix + uri).then(resp => {
+    axios.get(absolute ? uri : (uriPrefix + uri)).then(resp => {
       resolve(resp.data)
     }).catch(err => {
       reject(err)
@@ -20,9 +21,39 @@ export function $fetch(uri, absolute = false) {
   })
 }
 
+const githubRepoTree = (owner, repo) => 'https://' + path.join('api.github.com/repos', owner, repo, 'git/trees/master')
+
 export function fetchPrezList() {
   if (/github\.io$/.test(window.location.origin)) {
-    return Promise.resolve([])
+    const owner = /([^\.\/]+)\.github\.io/.exec(window.location.origin)[1]
+    const repo = /\/([^\/]+)/.exec(window.location.pathname)[1]
+    const resRoot = 'res'
+    return new Promise((resolve, reject) => {
+      $fetch(githubRepoTree(owner, repo), true).then(resp => {
+        try {
+          const resUrl = resp.tree.find(x => x.path === resRoot).url
+          resolve(resUrl)
+        } catch (err) {
+          reject(err)
+        }
+      }).catch(err => {
+        console.error(err)
+        resolve()
+      })})
+        .then(url => {
+          if (!url) {
+            return Promise.resolve([])
+          }
+          return $fetch(url, true).then(resp => {
+            try {
+              const prezList = Array.from(resp.tree).map(x => path.join('/', resRoot, x.path))
+              return Promise.resolve(prezList)
+            } catch (err) {
+              console.error(err)
+              return Promise.resolve([])
+            }
+          })
+        })
   }
   if (/localhost/.test(window.location.origin)) {
     const resRoot = '/res/'
