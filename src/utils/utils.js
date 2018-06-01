@@ -23,10 +23,18 @@ export function $fetch(uri, absolute = false) {
 
 const githubRepoTree = (owner, repo) => 'https://' + path.join('api.github.com/repos', owner, repo, 'git/trees/master')
 
-export function fetchPrezList() {
+export function githubOwner () {
+  return /([^\.\/]+)\.github\.io/.exec(window.location.origin)[1]
+}
+
+export function githubRepo () {
+  return /\/([^\/]+)/.exec(window.location.pathname)[1]
+}
+
+export function fetchPrezList () {
   if (/github\.io$/.test(window.location.origin)) {
-    const owner = /([^\.\/]+)\.github\.io/.exec(window.location.origin)[1]
-    const repo = /\/([^\/]+)/.exec(window.location.pathname)[1]
+    const owner = githubOwner()
+    const repo = githubRepo()
     const resRoot = 'res'
     return new Promise((resolve, reject) => {
       $fetch(githubRepoTree(owner, repo), true).then(resp => {
@@ -71,29 +79,43 @@ export function fetchPrezList() {
 const horizontalSeparator = '[//]: <> (horizontal)'
 const verticalSeparator = '[//]: <> (vertical)'
 export function md2reveal(markdown) {
-  return markdown.split(horizontalSeparator).map(h => {
+  const comments = []
+  const commentPattern = /\[\/\/\]:\s*<>\s*\(([^\(\)]+)\)/g
+  let match
+  while ((match = commentPattern.exec(markdown)) !== null) {
+    comments.push(match[1])
+  }
+
+  const html = markdown.split(horizontalSeparator).map(h => {
     const vs = h.split(verticalSeparator)
     return wrapTag(
       vs.length < 2 ? marked(h)
       : vs.map(v => wrapTag(marked(v), 'section')).join(''), 'section')
   }).join('')
+
+  return {
+    html,
+    comments,
+  }
 }
 
-function wrapTag(str, tag = 'div') {
+function wrapTag (str, tag = 'div') {
   tag = tag.replace(/<>/g, '') // in case
   return '<' + tag + '>' + str + '</' + tag + '>'
 }
 
 export function metadata (str) {
   str = unescape(str).replace(/^.+\//, '').replace(/\.md$/, '')
+  str = str.replace()
   let tags = []
   str = str.replace(/\([^\(\)]+\)$/, (match) => {
     tags = match.replace(/^\s*\(/, '').replace(/\)\s*$/, '').split(',')
     return ''
   })
+  const title = str.replace(/-(\w)/g, (_, c) => c ? ' ' + c.toUpperCase() : '').replace(/^(\w)/g, (_, c) => c ? c.toUpperCase() : '')
+
   return {
-    title: str.replace(/-(\w)/g, (_, c) => c ? ' ' + c.toUpperCase() : '')
-              .replace(/^(\w)/g, (_, c) => c ? c.toUpperCase() : ''),
-    tags
+    tags,
+    title,
   }
 }

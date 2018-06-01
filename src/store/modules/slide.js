@@ -2,7 +2,8 @@ import * as utils from '../../utils/utils'
 
 const state = {
   current: undefined,
-  sources: {}
+  sources: {},
+  defaultTheme: 'https://unpkg.com/reveal.js@3.6.0/css/theme/sky.css'
 }
 
 const getters = {
@@ -50,7 +51,9 @@ const mutations = {
     const { source, markdown } = payload
     if (markdown) {
       state.sources[source].markdown = markdown
-      state.sources[source].html = utils.md2reveal(markdown)
+      const { html, comments } = utils.md2reveal(markdown)
+      state.sources[source].html = html
+      state.sources[source].theme = comments.find(x => x.startsWith('theme:'))
     }
     state.current = source
   }
