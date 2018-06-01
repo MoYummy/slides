@@ -17,6 +17,9 @@ export default {
     }
   },
   computed: {
+    current () {
+      return this.$store.state.slide.current
+    },
     prez () {
       return this.$store.getters.currentPrez
     },
@@ -26,7 +29,7 @@ export default {
   },
   mounted () {
     Reveal.initialize({
-      center: true,
+      center: false,
       controls: true,
       controlsBackArrows: 'visible',
       controlsLayout: 'bottom-right',
@@ -38,7 +41,23 @@ export default {
         smartypants: true
       }
     })
+    Reveal.addEventListener('slidechanged', this.slidechanged)
+    if (this.$route.query && this.$route.query.s) {
+      this.$store.dispatch('show-prez', { source: this.$route.query.s }).then(() => {
+        Reveal.sync()
+        setTimeout(() => {
+          Reveal.slide(this.$route.query.h || 0, this.$route.query.v || 0, 0)
+        }, 100);
+      })
+    }
   },
+  methods: {
+    slidechanged ({ previousSlide, currentSlide, indexh, indexv }) {
+      this.$router.push({ query: Object.assign(
+        {}, this.$route.query, { s: this.current, h: indexh, v: indexv }
+      )})
+    }
+  }
 }
 </script>
 

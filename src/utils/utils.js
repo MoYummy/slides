@@ -11,9 +11,18 @@ function getUriPrefix () {
   return ''
 }
 
-export function $fetch(uri, absolute = false) {
+export function $fetch(uri, { absolute = false, useCache = true } = {}) {
+  let url = absolute ? uri : (uriPrefix + uri)
+  if (!useCache) {
+    const qid = url.lastIndexOf('?')
+    if (qid > -1) {
+      url += ( qid === url.length - 1 ? '_=' : '&_=') + Date.now()
+    } else {
+      url += '?_=' + Date.now()
+    }
+  }
   return new Promise((resolve, reject) => {
-    axios.get(absolute ? uri : (uriPrefix + uri)).then(resp => {
+    axios.get(url).then(resp => {
       resolve(resp.data)
     }).catch(err => {
       reject(err)
@@ -37,7 +46,7 @@ export function fetchPrezList () {
     const repo = githubRepo()
     const resRoot = 'res'
     return new Promise((resolve, reject) => {
-      $fetch(githubRepoTree(owner, repo), true).then(resp => {
+      $fetch(githubRepoTree(owner, repo), { absolute: true }).then(resp => {
         try {
           const resUrl = resp.tree.find(x => x.path === resRoot).url
           resolve(resUrl)
@@ -52,7 +61,7 @@ export function fetchPrezList () {
           if (!url) {
             return Promise.resolve([])
           }
-          return $fetch(url, true).then(resp => {
+          return $fetch(url, { absolute: true }).then(resp => {
             try {
               const prezList = Array.from(resp.tree).map(x => path.join('/', resRoot, x.path))
               return Promise.resolve(prezList)
@@ -83,14 +92,19 @@ export function md2reveal(markdown) {
   const commentPattern = /\[\/\/\]:\s*<>\s*\(([^\(\)]+)\)/g
   let match
   while ((match = commentPattern.exec(markdown)) !== null) {
+    if (match[1] === 'end') {
+      break
+    }
     comments.push(match[1])
   }
 
   const html = markdown.split(horizontalSeparator).map(h => {
     const vs = h.split(verticalSeparator)
-    return wrapTag(
-      vs.length < 2 ? marked(h)
-      : vs.map(v => wrapTag(marked(v), 'section')).join(''), 'section')
+    if (vs.length < 2) {
+      return wrapSection(h)
+    }
+    const nested = vs.map(v => wrapSection(v)).join('')
+    return wrapTag(nested, { tag: 'section' })
   }).join('')
 
   return {
@@ -99,9 +113,18 @@ export function md2reveal(markdown) {
   }
 }
 
-function wrapTag (str, tag = 'div') {
+function wrapTag (str, { tag = 'div', clazz = '' } = {}) {
   tag = tag.replace(/<>/g, '') // in case
-  return '<' + tag + '>' + str + '</' + tag + '>'
+  clazz = clazz ? ' class="' + clazz + '"' : ''
+  return '<' + tag + clazz + '>' + str + '</' + tag + '>'
+}
+
+function wrapSection (md) {
+  const opts = { tag: 'section', clazz: '' }
+  if (/\[\/\/\]:\s*<>\s*\(center\)/.test(md)) {
+    opts.clazz += 'center'
+  }
+  return wrapTag(marked(md), opts)
 }
 
 export function metadata (str) {
@@ -118,4 +141,12 @@ export function metadata (str) {
     tags,
     title,
   }
+}
+
+export function getRevealTheme () {
+  return document.getElementById('reveal-theme').getAttribute('href')
+}
+
+export function setRevealTheme (theme) {
+  document.getElementById('reveal-theme').setAttribute('href', theme)
 }

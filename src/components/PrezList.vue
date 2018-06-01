@@ -28,9 +28,6 @@ export default {
     prez () {
       return this.$store.getters.currentPrez
     },
-    defaultTheme () {
-      return this.$store.state.slide.defaultTheme
-    }
   },
   methods: {
     close () {
@@ -39,15 +36,11 @@ export default {
     select (source) {
       this.$store.dispatch('list-hide')
       source && this.$store.dispatch('show-prez', { source }).then(() => {
-        this.setTheme((this.prez.theme || this.defaultTheme).replace(/^theme:/, ''))
         Reveal.sync()
         setTimeout(() => {
           Reveal.slide(0, 0, 0)
         }, 100);
       })
-    },
-    setTheme (theme) {
-      document.getElementById('reveal-theme').setAttribute('href', theme)
     }
   },
 }

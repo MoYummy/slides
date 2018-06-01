@@ -3,7 +3,8 @@ import * as utils from '../../utils/utils'
 const state = {
   current: undefined,
   sources: {},
-  defaultTheme: 'https://unpkg.com/reveal.js@3.6.0/css/theme/sky.css'
+  defaultTheme: 'https://unpkg.com/reveal.js@3.6.0/css/theme/sky.css',
+  useCache: false,
 }
 
 const getters = {
@@ -19,16 +20,19 @@ const actions = {
     })
   },
   'show-prez': function ({ commit, dispatch }, { source }) {
+    const oldTheme = utils.getRevealTheme()
     return new Promise((resolve, reject) => {
-      if (state.sources[source]) {
-        if (state.sources[source].markdown) {
-          commit('show-prez', { source })
-          resolve()
-          return
+      if (state.useCache) {
+        if (state.sources[source]) {
+          if (state.sources[source].markdown) {
+            commit('show-prez', { source })
+            resolve()
+            return
+          }
         }
       }
 
-      utils.$fetch(source).then(markdown => {
+      utils.$fetch(source, { useCache: state.useCache }).then(markdown => {
         commit('show-prez', { source, markdown })
         resolve()
       }).catch(err => {
@@ -36,6 +40,10 @@ const actions = {
         resolve()
       })
     })
+      .then(() => {
+        const newTheme = (getters.currentPrez.theme || state.defaultTheme).replace(/^theme:/, '')
+        oldTheme !== newTheme && (utils.setRevealTheme(newTheme))
+      })
   }
 }
 
