@@ -8,16 +8,16 @@ const getters = {
 }
 
 const actions = {
-  'nav-show': function ({ commit, dispatch }) {
+  'nav-show': function ({ commit }) {
     commit('nav-set', { navVisible: true })
   },
-  'nav-hide': function ({ commit, dispatch }) {
+  'nav-hide': function ({ commit }) {
     commit('nav-set', { navVisible: false })
   },
-  'list-show': function ({ commit, dispatch }) {
+  'list-show': function ({ commit }) {
     commit('list-set', { listVisible: true })
   },
-  'list-hide': function ({ commit, dispatch }) {
+  'list-hide': function ({ commit }) {
     commit('list-set', { listVisible: false })
   },
 }

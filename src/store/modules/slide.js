@@ -14,12 +14,12 @@ const getters = {
 }
 
 const actions = {
-  'fetch-prez-list': function ({ commit, dispatch }) {
+  'fetch-prez-list': function ({ commit }) {
     return utils.fetchPrezList().then(prezList => {
       commit('update-prez-list', { prezList })
     })
   },
-  'show-prez': function ({ commit, dispatch }, { source }) {
+  'show-prez': function ({ commit, getters }, { source }) {
     const oldTheme = utils.getRevealTheme()
     return new Promise((resolve, reject) => {
       if (state.useCache) {
