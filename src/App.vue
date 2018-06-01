@@ -21,7 +21,7 @@ export default {
     PrezList,
     // VuexStore,
   },
-  mounted () {
+  beforeMount () {
     this.$store.dispatch('fetch-prez-list')
   }
 }

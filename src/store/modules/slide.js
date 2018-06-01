@@ -58,10 +58,9 @@ const mutations = {
   'show-prez': function (state, payload) {
     const { source, markdown } = payload
     if (markdown) {
-      state.sources[source].markdown = markdown
       const { html, comments } = utils.md2reveal(markdown)
-      state.sources[source].html = html
-      state.sources[source].theme = comments.find(x => x.startsWith('theme:'))
+      const theme = comments.find(x => x.startsWith('theme:'))
+      state.sources[source] = Object.assign({}, state.sources[source], { markdown, html, theme })
     }
     state.current = source
   }

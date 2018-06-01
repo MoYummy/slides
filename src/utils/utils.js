@@ -2,21 +2,17 @@ import path from 'path'
 import marked from 'marked'
 import axios from 'axios'
 
-const uriPrefix = getUriPrefix()
-
-function getUriPrefix () {
-  if (/github\.io$/.test(window.location.origin)) {
-    return '/' + window.location.pathname.split('/')[1]
-  }
-  return ''
+export function baseurl () {
+  const baseEl = document.getElementById('baseurl')
+  baseEl.setAttribute('href', window.location.pathname.split('/').slice(0,2).join('/') + '/')
 }
 
 export function $fetch(uri, { absolute = false, useCache = true } = {}) {
-  let url = absolute ? uri : (uriPrefix + uri)
+  let url = absolute ? uri : (document.baseURI + uri)
   if (!useCache) {
-    const qid = url.lastIndexOf('?')
-    if (qid > -1) {
-      url += ( qid === url.length - 1 ? '_=' : '&_=') + Date.now()
+    const qpos = url.lastIndexOf('?')
+    if (qpos > -1) {
+      url += ( qpos === url.length - 1 ? '_=' : '&_=') + Date.now()
     } else {
       url += '?_=' + Date.now()
     }
@@ -63,7 +59,9 @@ export function fetchPrezList () {
           }
           return $fetch(url, { absolute: true }).then(resp => {
             try {
-              const prezList = Array.from(resp.tree).map(x => path.join('/', resRoot, x.path))
+              const prezList = Array.from(resp.tree)
+                .filter(x => x.type === 'blob' && /\.md$/.test(x.path))
+                .map(x => path.join('/', resRoot, x.path))
               return Promise.resolve(prezList)
             } catch (err) {
               console.error(err)

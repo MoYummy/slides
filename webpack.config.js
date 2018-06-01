@@ -28,7 +28,8 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: path.resolve(__dirname, 'dist') + '/',
   },
   optimization: {
     splitChunks: {
@@ -36,9 +37,10 @@ module.exports = {
     }
   },
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
-    host: "0.0.0.0",
-    port: 80
+    contentBase: path.join(__dirname, 'dist'),
+    host: '0.0.0.0',
+    port: 80,
+    publicPath: path.resolve(__dirname, 'dist') + '/',
   },
   plugins: [
     new webpack.DefinePlugin({
