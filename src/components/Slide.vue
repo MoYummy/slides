@@ -8,9 +8,6 @@
 </template>
 
 <script>
-import * as utils from '../utils/utils'
-import Reveal from 'reveal.js/js/reveal'
-
 export default {
   data () {
     return {
@@ -28,7 +25,7 @@ export default {
     }
   },
   mounted () {
-    Reveal.initialize({
+    window.Reveal.initialize({
       center: false,
       controls: true,
       controlsBackArrows: 'visible',
@@ -39,23 +36,26 @@ export default {
       touch: true,
       markdown: {
         smartypants: true
-      }
+      },
     })
-    Reveal.addEventListener('slidechanged', this.slidechanged)
+    window.Reveal.addEventListener('synced', this.slidechanged)
+    window.Reveal.addEventListener('slidechanged', this.slidechanged)
     if (this.$route.query && this.$route.query.s) {
       this.$store.dispatch('show-prez', { source: this.$route.query.s }).then(() => {
-        Reveal.sync()
+        window.Reveal.sync()
         setTimeout(() => {
-          Reveal.slide(this.$route.query.h || 0, this.$route.query.v || 0, 0)
+          window.Reveal.slide(this.$route.query.h || 0, this.$route.query.v || 0, 0)
         }, 100);
       })
     }
   },
+  beforeDestroy () {
+    window.Reveal.removeEventListener('synced', this.slidechanged)
+    window.Reveal.removeEventListener('slidechanged', this.slidechanged)
+  },
   methods: {
     slidechanged ({ previousSlide, currentSlide, indexh, indexv }) {
-      this.$router.push({ query: Object.assign(
-        {}, this.$route.query, { s: this.current, h: indexh, v: indexv }
-      )})
+      this.$store.dispatch('set-slide-route', { h: indexh, v: indexv })
     }
   }
 }

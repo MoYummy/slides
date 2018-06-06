@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import Reveal from 'reveal.js/js/reveal'
-
 export default {
   name: 'PrezList',
   computed: {
@@ -36,9 +34,9 @@ export default {
     select (source) {
       this.$store.dispatch('list-hide')
       source && this.$store.dispatch('show-prez', { source }).then(() => {
-        Reveal.sync()
+        window.Reveal.sync()
         setTimeout(() => {
-          Reveal.slide(0, 0, 0)
+          window.Reveal.slide(0, 0, 0)
         }, 100);
       })
     }

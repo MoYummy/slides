@@ -1,3 +1,4 @@
+import router from '../../router'
 import * as utils from '../../utils/utils'
 
 const state = {
@@ -19,13 +20,18 @@ const actions = {
       commit('update-prez-list', { prezList })
     })
   },
-  'show-prez': function ({ commit, getters }, { source }) {
+  'show-prez': function ({ commit, getters, dispatch }, { source }) {
     const oldTheme = utils.getRevealTheme()
     return new Promise((resolve, reject) => {
       if (state.useCache) {
         if (state.sources[source]) {
           if (state.sources[source].markdown) {
             commit('show-prez', { source })
+            let query = router.app.$route.query
+            if (query.s !== source) {
+              query = Object.assign({}, query, { h: 0, v: 0 })
+            }
+            dispatch('set-slide-route', query)
             resolve()
             return
           }
@@ -34,6 +40,11 @@ const actions = {
 
       utils.$fetch(source, { useCache: state.useCache }).then(markdown => {
         commit('show-prez', { source, markdown })
+        let query = router.app.$route.query
+        if (query.s !== source) {
+          query = Object.assign({}, query, { s: source, h: 0, v: 0 })
+        }
+        dispatch('set-slide-route', query)
         resolve()
       }).catch(err => {
         console.error(err)
