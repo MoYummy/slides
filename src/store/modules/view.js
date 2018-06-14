@@ -1,6 +1,7 @@
 const state = {
   navVisible: false,
   listVisible: false,
+  inputVisible: false,
 }
 
 const getters = {
@@ -14,11 +15,19 @@ const actions = {
   'nav-hide': function ({ commit }) {
     commit('nav-set', { navVisible: false })
   },
-  'list-show': function ({ commit }) {
+  'list-show': function ({ commit, state }) {
     commit('list-set', { listVisible: true })
+    state.inputVisible && commit('input-set', { inputVisible: false })
   },
   'list-hide': function ({ commit }) {
     commit('list-set', { listVisible: false })
+  },
+  'input-show': function ({ commit, state }) {
+    commit('input-set', { inputVisible: true })
+    state.listVisible && commit('list-set', { listVisible: false })
+  },
+  'input-hide': function ({ commit }) {
+    commit('input-set', { inputVisible: false })
   },
 }
 
@@ -28,6 +37,9 @@ const mutations = {
   },
   'list-set': function (state, payload) {
     state.listVisible = payload.listVisible
+  },
+  'input-set': function (state, payload) {
+    state.inputVisible = payload.inputVisible
   },
 }
 

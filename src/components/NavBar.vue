@@ -5,6 +5,7 @@
     </div>
     <div class="center">
       <div class="select-prez" @click="showList">{{ currentSlideTitle }}</div>
+      <div class="enter-prez" @click="showInput">Enter</div>
     </div>
     <div class="right">{{ appInfo }}</div>
   </div>
@@ -44,6 +45,9 @@ export default {
     showList () {
       this.$store.dispatch('list-show')
     },
+    showInput () {
+      this.$store.dispatch('input-show')
+    },
     openGit () {
       const url = this.$store.state.env.packageJson.repository.url
       window.open(url.replace(/^.*:\/\//, 'https://'))
@@ -72,7 +76,8 @@ export default {
   user-select: none;
 }
 
-.nav-bar .select-prez {
+.nav-bar .select-prez,
+.nav-bar .enter-prez {
   background: transparent;
   border: 0.1em;
   color: white;
@@ -80,7 +85,8 @@ export default {
   height: 100%;
 }
 
-.nav-bar .select-prez:hover {
+.nav-bar .select-prez:hover,
+.nav-bar .enter-prez:hover {
   background: rgba(0, 0, 0, 0.3);
 }
 

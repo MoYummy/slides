@@ -3,6 +3,7 @@
     <mobile-point></mobile-point>
     <nav-bar>Loading</nav-bar>
     <prez-list>Loading</prez-list>
+    <prez-input>Loading</prez-input>
     <router-view />
     <!--<vuex-store></vuex-store>-->
   </div>
@@ -12,6 +13,7 @@
 const MobilePoint = () => import('./components/MobilePoint')
 const NavBar = () => import('./components/NavBar')
 const PrezList = () => import('./components/PrezList')
+const PrezInput = () => import('./components/PrezInput')
 // const VuexStore = () => import('./components/VuexStore')
 
 export default {
@@ -19,6 +21,7 @@ export default {
     MobilePoint,
     NavBar,
     PrezList,
+    PrezInput,
     // VuexStore,
   },
   beforeMount () {

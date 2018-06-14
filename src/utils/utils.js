@@ -133,7 +133,7 @@ export function metadata (str) {
     tags = match.replace(/^\s*\(/, '').replace(/\)\s*$/, '').split(',')
     return ''
   })
-  const title = str.replace(/-(\w)/g, (_, c) => c ? ' ' + c.toUpperCase() : '').replace(/^(\w)/g, (_, c) => c ? c.toUpperCase() : '')
+  const title = str.split('/').pop().replace(/-(\w)/g, (_, c) => c ? ' ' + c.toUpperCase() : '').replace(/^(\w)/g, (_, c) => c ? c.toUpperCase() : '')
 
   return {
     tags,

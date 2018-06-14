@@ -38,11 +38,12 @@ const actions = {
         }
       }
 
-      utils.$fetch(source, { useCache: state.useCache }).then(markdown => {
-        commit('show-prez', { source, markdown })
+      const absolute = /^http/.test(source)
+      utils.$fetch(source, { useCache: state.useCache, absolute }).then(markdown => {
+        commit('show-prez', { source, markdown, absolute })
         let query = router.app.$route.query
         if (query.s !== source) {
-          query = Object.assign({}, query, { s: source, h: 0, v: 0 })
+          query = Object.assign({}, query, { s: (absolute ? '' : source), h: 0, v: 0 })
         }
         dispatch('set-slide-route', query)
         resolve()
@@ -67,11 +68,14 @@ const mutations = {
     })
   },
   'show-prez': function (state, payload) {
-    const { source, markdown } = payload
+    const { source, markdown, absolute } = payload
     if (markdown) {
       const { html, comments } = utils.md2reveal(markdown)
       const theme = comments.find(x => x.startsWith('theme:'))
       state.sources[source] = Object.assign({}, state.sources[source], { markdown, html, theme })
+      if (absolute) {
+        state.sources[source].title = utils.metadata(source).title
+      }
     }
     state.current = source
   }

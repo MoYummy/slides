@@ -1,12 +1,11 @@
 <template>
-  <div class="prez-list" v-if="listVisible">
+  <div class="prez-input" v-if="inputVisible">
     <div class="modal-mask" @click.self="close">
       <div class="modal-wrapper">
         <div class="modal-container">
-          <div class="prez"
-            v-for="(prez, source) of prezList"
-            :key="source"
-            @click.prevent="select(source)">{{ prez.title }}</div>
+          <form class="form" @submit.prevent="select(prez)">
+            <input class="input" type="text" v-model="prez"/>
+          </form>
         </div>
       </div>
     </div>
@@ -15,24 +14,23 @@
 
 <script>
 export default {
-  name: 'PrezList',
+  name: 'PrezInput',
+  data () {
+    return {
+      prez: ''
+    }
+  },
   computed: {
-    prezList () {
-      return this.$store.state.slide.sources
-    },
-    listVisible () {
-      return this.$store.state.view.listVisible
-    },
-    prez () {
-      return this.$store.getters.currentPrez
+    inputVisible () {
+      return this.$store.state.view.inputVisible
     },
   },
   methods: {
     close () {
-      this.$store.dispatch('list-hide')
+      this.$store.dispatch('input-hide')
     },
     select (source) {
-      this.$store.dispatch('list-hide')
+      this.$store.dispatch('input-hide')
       source && this.$store.dispatch('show-prez', { source }).then(() => {
         window.Reveal.sync()
         setTimeout(() => {
@@ -45,7 +43,7 @@ export default {
 </script>
 
 <style scoped>
-.prez-list {
+.prez-input {
   width: 0;
 }
 
@@ -82,19 +80,11 @@ export default {
   width: fit-content;
 }
 
-.prez {
-  align-items: center;
-  color: black;
+.form,
+.input {
   display: flex;
-  height: 2em;
   justify-content: center;
-  overflow: hidden;
-  padding: 0 0.5em;
-  white-space: nowrap;
+  width: 100%;
 }
 
-.prez:hover {
-  background: rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
 </style>
