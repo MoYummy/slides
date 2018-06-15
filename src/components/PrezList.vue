@@ -4,7 +4,12 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="prez"
-            v-for="(prez, source) of prezList"
+            v-for="(prez, source) of sourceList"
+            :key="source"
+            @click.prevent="select(source)">{{ prez.title }}</div>
+          <hr v-if="Object.keys(externalList).length > 0"/>
+          <div class="prez"
+            v-for="(prez, source) of externalList"
             :key="source"
             @click.prevent="select(source)">{{ prez.title }}</div>
         </div>
@@ -17,8 +22,11 @@
 export default {
   name: 'PrezList',
   computed: {
-    prezList () {
+    sourceList () {
       return this.$store.state.slide.sources
+    },
+    externalList () {
+      return this.$store.state.slide.externals
     },
     listVisible () {
       return this.$store.state.view.listVisible
@@ -80,6 +88,10 @@ export default {
   min-width: 100%;
   padding: 0.5em;
   width: fit-content;
+}
+
+hr {
+  width: 100%;
 }
 
 .prez {

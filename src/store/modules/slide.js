@@ -4,13 +4,14 @@ import * as utils from '../../utils/utils'
 const state = {
   current: undefined,
   sources: {},
+  externals: {},
   defaultTheme: 'https://unpkg.com/reveal.js@3.6.0/css/theme/sky.css',
   useCache: false,
 }
 
 const getters = {
   currentPrez: function (state) {
-    return state.sources[state.current]
+    return state.sources[state.current] || state.externals[state.current]
   }
 }
 
@@ -22,23 +23,22 @@ const actions = {
   },
   'show-prez': function ({ commit, getters, dispatch }, { source }) {
     const oldTheme = utils.getRevealTheme()
+    const absolute = /^http/.test(source)
     return new Promise((resolve, reject) => {
       if (state.useCache) {
-        if (state.sources[source]) {
-          if (state.sources[source].markdown) {
-            commit('show-prez', { source })
-            let query = router.app.$route.query
-            if (query.s !== source) {
-              query = Object.assign({}, query, { h: 0, v: 0 })
-            }
-            dispatch('set-slide-route', query)
-            resolve()
-            return
+        if ((state.sources[source] && state.sources[source].markdown)
+          || (state.externals[source])) {
+          commit('show-prez', { source, absolute })
+          let query = router.app.$route.query
+          if (query.s !== source) {
+            query = Object.assign({}, query, { h: 0, v: 0 })
           }
+          dispatch('set-slide-route', query)
+          resolve()
+          return
         }
       }
 
-      const absolute = /^http/.test(source)
       utils.$fetch(source, { useCache: state.useCache, absolute }).then(markdown => {
         commit('show-prez', { source, markdown, absolute })
         let query = router.app.$route.query
@@ -72,9 +72,10 @@ const mutations = {
     if (markdown) {
       const { html, comments } = utils.md2reveal(markdown)
       const theme = comments.find(x => x.startsWith('theme:'))
-      state.sources[source] = Object.assign({}, state.sources[source], { markdown, html, theme })
+      const sourceRoot = absolute ? 'externals' : 'sources'
+      state[sourceRoot][source] = Object.assign({}, state[sourceRoot][source], { markdown, html, theme })
       if (absolute) {
-        state.sources[source].title = utils.metadata(source).title
+        state[sourceRoot][source].title = utils.metadata(source).title
       }
     }
     state.current = source
